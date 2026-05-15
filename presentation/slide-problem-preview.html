@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>תצוגה מקדימה — המצב הקיים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #0a0f1e;
+    font-family: 'Heebo', 'Segoe UI', Arial, sans-serif;
+    direction: rtl;
+  }
+
+  .slide {
+    width: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px 40px;
+    gap: 32px;
+  }
+
+  /* ── Title ── */
+  .title-wrap { text-align: center; }
+  .title-wrap h2 {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }
+  .title-wrap h2 em {
+    font-style: normal;
+    color: #f97316;
+  }
+  .title-bar {
+    width: 48px; height: 4px;
+    background: #0d9488;
+    border-radius: 4px;
+    margin: 0 auto;
+  }
+
+  /* ── Cards ── */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #151d35, #0f1525);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: rgba(13,148,136,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .card-text { flex: 1; }
+
+  .card-title {
+    color: #1dd38a;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 5px;
+  }
+
+  .card-desc {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.65;
+    font-weight: 400;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="title-wrap">
+    <h2>המצב הקיים: <em>פרצת אבטחה מובנית</em></h2>
+    <div class="title-bar"></div>
+  </div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="icon-wrap">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="11" width="18" height="11" rx="2" stroke="#1dd38a" stroke-width="2"/>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1" stroke="#1dd38a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="card-text">
+        <div class="card-title">המפתח החשוף</div>
+        <div class="card-desc">הגישה לדלתות מחייבת כניסה לתפריטי ניהול בטאבלט. העובד הופך ל"מנהל מערכת" בעל כורחו.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="icon-wrap">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#1dd38a" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="12" y1="9" x2="12" y2="13" stroke="#1dd38a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="17" r="0.5" fill="#1dd38a" stroke="#1dd38a" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="card-text">
+        <div class="card-title">סיכון הרסני</div>
+        <div class="card-desc">חשיפת הגדרות קריטיות של העמדה והטאבלט לעובדי שטח עלולה להוביל לנזק תוכנתי והשבתת אתר.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="icon-wrap">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="#1dd38a" stroke-width="2" stroke-linecap="round"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="#1dd38a" stroke-width="2" stroke-linecap="round"/>
+          <line x1="1" y1="1" x2="23" y2="23" stroke="#1dd38a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="card-text">
+        <div class="card-title">חוסר שקיפות</div>
+        <div class="card-desc">מי פתח? מתי? איזה תא? היעדר תיעוד מוביל לאובדן ציוד ללא יכולת מעקב.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

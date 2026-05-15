@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SmartOpener Utility</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+  }
+
+  #story {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    max-width: 430px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #111;
+  }
+
+  /* SLIDES */
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  /* PROGRESS BARS */
+  #progress {
+    position: absolute;
+    top: 0;
+    left: 0; right: 0;
+    display: flex;
+    gap: 3px;
+    padding: 10px 10px 0;
+    z-index: 10;
+  }
+  .bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    background: #fff;
+    border-radius: 2px;
+    transition: none;
+  }
+  .bar-fill.done { width: 100%; }
+
+  /* TAP ZONES */
+  #tap-left {
+    position: absolute;
+    top: 0; left: 0;
+    width: 30%; height: 100%;
+    z-index: 5;
+  }
+  #tap-right {
+    position: absolute;
+    top: 0; right: 0;
+    width: 70%; height: 100%;
+    z-index: 5;
+  }
+
+  /* PAUSE OVERLAY */
+  #pause-icon {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.55);
+    border-radius: 50%;
+    width: 64px; height: 64px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  #pause-icon.visible { opacity: 1; }
+  #pause-icon svg { width: 28px; height: 28px; fill: #fff; }
+
+  /* END SCREEN */
+  #end-screen {
+    position: absolute;
+    inset: 0;
+    background: #0a0f1e;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 30;
+    padding: 32px;
+    text-align: center;
+  }
+  #end-screen.show { display: flex; }
+  #end-screen h2 {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  #end-screen p { color: #94a3b8; font-size: 15px; line-height: 1.6; }
+  #replay-btn {
+    margin-top: 8px;
+    background: #1dd38a;
+    color: #0a0f1e;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #replay-btn:active { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<div id="story">
+
+  <!-- Progress bars -->
+  <div id="progress"></div>
+
+  <!-- Slides -->
+  <div id="slides"></div>
+
+  <!-- Tap zones -->
+  <div id="tap-left"></div>
+  <div id="tap-right"></div>
+
+  <!-- Pause icon -->
+  <div id="pause-icon">
+    <svg viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+  </div>
+
+  <!-- End screen -->
+  <div id="end-screen">
+    <h2>SmartOpener Utility</h2>
+    <p>הפתרון האידיאלי לשליטה וביטחון<br>במערכות תאי הטענה של מאיר יוטיליטיז</p>
+    <button id="replay-btn">▶ הצג שוב</button>
+  </div>
+
+</div>
+
+<script>
+const SLIDES = [
+  'slides/slide1.jpg',
+  'slides/slide2.jpg',
+  'slides/slide3.jpg',
+  'slides/slide4.jpg',
+  'slides/slide5.jpg',
+  'slides/slide6.jpg',
+  'slides/slide7.jpg',
+  'slides/slide8.jpg',
+  'slides/slide9.jpg',
+];
+
+const DURATION = 5500; // ms per slide
+
+let current = 0;
+let paused = false;
+let startTime = null;
+let elapsed = 0;
+let rafId = null;
+let holdTimer = null;
+
+const progressEl = document.getElementById('progress');
+const slidesEl   = document.getElementById('slides');
+const pauseIcon  = document.getElementById('pause-icon');
+const endScreen  = document.getElementById('end-screen');
+
+// Build DOM
+SLIDES.forEach((src, i) => {
+  const div = document.createElement('div');
+  div.className = 'slide' + (i === 0 ? ' active' : '');
+  const img = document.createElement('img');
+  img.src = src;
+  img.draggable = false;
+  div.appendChild(img);
+  slidesEl.appendChild(div);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'bar-wrap';
+  const fill = document.createElement('div');
+  fill.className = 'bar-fill';
+  wrap.appendChild(fill);
+  progressEl.appendChild(wrap);
+});
+
+const slideEls = document.querySelectorAll('.slide');
+const barFills = document.querySelectorAll('.bar-fill');
+
+function goTo(index) {
+  if (index >= SLIDES.length) { showEnd(); return; }
+  if (index < 0) index = 0;
+
+  slideEls[current].classList.remove('active');
+  barFills[current].style.width = index > current ? '100%' : '0%';
+  barFills[current].classList.remove('done');
+  if (index > current) barFills[current].classList.add('done');
+
+  current = index;
+  slideEls[current].classList.add('active');
+
+  // Mark previous bars
+  barFills.forEach((b, i) => {
+    b.classList.remove('done');
+    b.style.width = i < current ? '100%' : (i === current ? '0%' : '0%');
+    if (i < current) b.classList.add('done');
+  });
+
+  elapsed = 0;
+  startTime = performance.now();
+  if (!paused) tick();
+}
+
+function tick() {
+  cancelAnimationFrame(rafId);
+  if (paused) return;
+
+  rafId = requestAnimationFrame((now) => {
+    if (!startTime) startTime = now;
+    const total = (now - startTime) + elapsed;
+    const pct = Math.min(total / DURATION * 100, 100);
+    barFills[current].style.width = pct + '%';
+
+    if (total >= DURATION) {
+      barFills[current].classList.add('done');
+      barFills[current].style.width = '100%';
+      goTo(current + 1);
+    } else {
+      tick();
+    }
+  });
+}
+
+function pause() {
+  if (paused) return;
+  paused = true;
+  elapsed += performance.now() - startTime;
+  cancelAnimationFrame(rafId);
+  pauseIcon.classList.add('visible');
+}
+
+function resume() {
+  if (!paused) return;
+  paused = false;
+  startTime = performance.now();
+  pauseIcon.classList.remove('visible');
+  tick();
+}
+
+function showEnd() {
+  cancelAnimationFrame(rafId);
+  endScreen.classList.add('show');
+}
+
+function restart() {
+  endScreen.classList.remove('show');
+  paused = false;
+  current = 0;
+  barFills.forEach(b => { b.style.width = '0%'; b.classList.remove('done'); });
+  slideEls.forEach(s => s.classList.remove('active'));
+  slideEls[0].classList.add('active');
+  elapsed = 0;
+  startTime = performance.now();
+  tick();
+}
+
+// Touch & click
+const tapLeft  = document.getElementById('tap-left');
+const tapRight = document.getElementById('tap-right');
+
+function startHold() {
+  holdTimer = setTimeout(pause, 120);
+}
+function endHold(action) {
+  clearTimeout(holdTimer);
+  if (paused) { resume(); return; }
+  if (action === 'left')  goTo(current - 1);
+  if (action === 'right') goTo(current + 1);
+}
+
+['mousedown','touchstart'].forEach(e => {
+  tapLeft.addEventListener(e,  () => startHold(), { passive: true });
+  tapRight.addEventListener(e, () => startHold(), { passive: true });
+});
+['mouseup','touchend'].forEach(e => {
+  tapLeft.addEventListener(e,  () => endHold('left'));
+  tapRight.addEventListener(e, () => endHold('right'));
+});
+
+document.getElementById('replay-btn').addEventListener('click', restart);
+
+// Start
+goTo(0);
+</script>
+</body>
+</html>

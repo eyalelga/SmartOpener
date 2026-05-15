@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>תצוגה מקדימה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #0a0f1e;
+    font-family: 'Heebo', 'Segoe UI', Arial, sans-serif;
+    direction: rtl;
+  }
+
+  .slide {
+    width: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 22px 40px;
+    gap: 32px;
+  }
+
+  /* ── Title ── */
+  .title-wrap { text-align: center; }
+  .title-wrap h2 {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.4px;
+    margin-bottom: 12px;
+  }
+  .title-bar {
+    width: 48px; height: 4px;
+    background: #1dd38a;
+    border-radius: 4px;
+    margin: 0 auto;
+  }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #151d35, #0f1525);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 22px 14px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    text-align: center;
+  }
+
+  .step {
+    align-self: flex-start;
+    background: #1dd38a;
+    color: #0a0f1e;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    margin-bottom: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  .icon {
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    color: #f1f5ff;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    color: #64748b;
+    font-size: 11.5px;
+    line-height: 1.65;
+    font-weight: 400;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="title-wrap">
+    <h2>תוכנית יישום פרקטית</h2>
+    <div class="title-bar"></div>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <span class="step">שלב 1</span>
+      <div class="icon">🔬</div>
+      <div class="card-title">פיילוט ראשוני</div>
+      <div class="card-desc">בדיקת קישוריות ופתיחה בעמדה אחת נבחרת לוידאו יציבות.</div>
+    </div>
+
+    <div class="card">
+      <span class="step">שלב 2</span>
+      <div class="icon">📱</div>
+      <div class="card-title">מערך דשבורדים</div>
+      <div class="card-desc">הקמת ממשקי ניהול למנהלים ואפליקציית עובד ייעודית.</div>
+    </div>
+
+    <div class="card">
+      <span class="step">שלב 3</span>
+      <div class="icon">🔧</div>
+      <div class="card-title">חומרה ואינטגרציה</div>
+      <div class="card-desc">התקנת בקרי SmartOpener וסנכרון מלא מול המערכות.</div>
+    </div>
+
+    <div class="card">
+      <span class="step">שלב 4</span>
+      <div class="icon">🚀</div>
+      <div class="card-title">פריסה ארצית</div>
+      <div class="card-desc">מעבר מלא לשיטה החדשה בכל סניפי מאיר יוטיליטיז.</div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>
