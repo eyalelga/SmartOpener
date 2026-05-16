@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  name         String
+  role         Role         @default(worker)
+  passwordHash String       @map("password_hash")
+  pinHash      String?      @map("pin_hash")
+  managerId    Int?         @map("manager_id")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  manager      User?        @relation("ManagedBy", fields: [managerId], references: [id])
+  workers      User[]       @relation("ManagedBy")
+  permissions  Permission[]
+  events       Event[]
+
+  @@map("users")
+}
+
+enum Role {
+  super_admin
+  manager
+  worker
+}
+
+model Station {
+  id             Int          @id @default(autoincrement())
+  name           String
+  location       String?
+  agentConnected Boolean      @default(false) @map("agent_connected")
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  permissions    Permission[]
+  events         Event[]
+
+  @@map("stations")
+}
+
+model Permission {
+  userId    Int @map("user_id")
+  stationId Int @map("station_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  station Station @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, stationId])
+  @@map("permissions")
+}
+
+model Event {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  stationId  Int      @map("station_id")
+  doorNumber String   @map("door_number")
+  openedAt   DateTime @default(now()) @map("opened_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  station Station @relation(fields: [stationId], references: [id])
+
+  @@map("events")
+}
