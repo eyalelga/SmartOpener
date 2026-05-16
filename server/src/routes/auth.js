@@ -5,11 +5,12 @@ import prisma from '../db/index.js'
 import { requireAuth } from '../middleware/auth.js'
 
 const router = Router()
+const isProd = process.env.NODE_ENV === 'production'
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  secure: isProd,
+  sameSite: isProd ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 }
 
 // POST /api/v1/auth/login
