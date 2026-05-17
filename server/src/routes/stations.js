@@ -76,6 +76,9 @@ router.post('/:id/open', async (req, res) => {
   const { door, pin } = req.body
   if (!door) return res.status(400).json({ error: 'door required' })
 
+  const logEvent = (status, failureReason = null) =>
+    prisma.event.create({ data: { eventType: 'door_open', status, failureReason, userId: req.user.id, stationId, doorNumber: String(door) } })
+
   // Workers must provide PIN
   if (req.user.role === 'worker') {
     if (!pin) return res.status(400).json({ error: 'pin required' })
@@ -85,22 +88,29 @@ router.post('/:id/open', async (req, res) => {
     })
     if (!fullUser?.pinHash) return res.status(403).json({ error: 'PIN לא הוגדר — פנה למנהל' })
     const valid = await import('bcryptjs').then(m => m.default.compare(String(pin), fullUser.pinHash))
-    if (!valid) return res.status(403).json({ error: 'PIN שגוי' })
+    if (!valid) {
+      await logEvent('failed', 'wrong_pin')
+      return res.status(403).json({ error: 'PIN שגוי' })
+    }
 
     const perm = await prisma.permission.findUnique({
       where: { userId_stationId: { userId: req.user.id, stationId } },
     })
-    if (!perm) return res.status(403).json({ error: 'אין הרשאה לתחנה זו' })
+    if (!perm) {
+      await logEvent('failed', 'no_permission')
+      return res.status(403).json({ error: 'אין הרשאה לתחנה זו' })
+    }
   } else if (req.user.role !== 'super_admin') {
     const perm = await prisma.permission.findUnique({
       where: { userId_stationId: { userId: req.user.id, stationId } },
     })
-    if (!perm) return res.status(403).json({ error: 'Forbidden' })
+    if (!perm) {
+      await logEvent('failed', 'no_permission')
+      return res.status(403).json({ error: 'Forbidden' })
+    }
   }
 
-  await prisma.event.create({
-    data: { userId: req.user.id, stationId, doorNumber: String(door) },
-  })
+  await logEvent('success')
 
   // TODO: forward open command to Android Agent via WebSocket
   res.json({ ok: true, stationId, door })

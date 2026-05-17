@@ -21,10 +21,18 @@ router.post('/login', async (req, res) => {
   }
 
   const user = await prisma.user.findFirst({ where: { name } })
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' })
+  if (!user) {
+    await prisma.event.create({ data: { eventType: 'login', status: 'failed', failureReason: 'user_not_found', attemptedName: name } })
+    return res.status(401).json({ error: 'Invalid credentials' })
+  }
 
   const valid = await bcrypt.compare(password, user.passwordHash)
-  if (!valid) return res.status(401).json({ error: 'Invalid credentials' })
+  if (!valid) {
+    await prisma.event.create({ data: { eventType: 'login', status: 'failed', failureReason: 'wrong_password', userId: user.id } })
+    return res.status(401).json({ error: 'Invalid credentials' })
+  }
+
+  await prisma.event.create({ data: { eventType: 'login', status: 'success', userId: user.id } })
 
   const payload = { id: user.id, name: user.name, role: user.role }
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })

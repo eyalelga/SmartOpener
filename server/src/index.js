@@ -6,6 +6,7 @@ import cors from 'cors'
 import authRouter from './routes/auth.js'
 import usersRouter from './routes/users.js'
 import stationsRouter from './routes/stations.js'
+import eventsRouter from './routes/events.js'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
@@ -20,6 +21,7 @@ app.use(cookieParser())
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', usersRouter)
 app.use('/api/v1/stations', stationsRouter)
+app.use('/api/v1/events', eventsRouter)
 
 app.get('/health', (req, res) => res.json({ ok: true }))
 

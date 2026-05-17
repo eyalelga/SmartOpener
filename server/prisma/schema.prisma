@@ -55,14 +55,18 @@ model Permission {
 }
 
 model Event {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  stationId  Int      @map("station_id")
-  doorNumber String   @map("door_number")
-  openedAt   DateTime @default(now()) @map("opened_at")
+  id            Int      @id @default(autoincrement())
+  eventType     String   @map("event_type")
+  status        String
+  failureReason String?  @map("failure_reason")
+  userId        Int?     @map("user_id")
+  attemptedName String?  @map("attempted_name")
+  stationId     Int?     @map("station_id")
+  doorNumber    String?  @map("door_number")
+  createdAt     DateTime @default(now()) @map("created_at")
 
-  user    User    @relation(fields: [userId], references: [id])
-  station Station @relation(fields: [stationId], references: [id])
+  user    User?    @relation(fields: [userId], references: [id])
+  station Station? @relation(fields: [stationId], references: [id])
 
   @@map("events")
 }
