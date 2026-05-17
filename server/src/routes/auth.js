@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
 
   res.cookie('token', token, COOKIE_OPTIONS)
-  res.json({ id: user.id, name: user.name, role: user.role })
+  res.json({ id: user.id, name: user.name, role: user.role, token })
 })
 
 // POST /api/v1/auth/logout
