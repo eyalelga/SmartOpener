@@ -14,6 +14,17 @@ export default function SuperAdminDashboard() {
   const [expanded, setExpanded] = useState(null)
   const [drilldown, setDrilldown] = useState({}) // stationId → { users, loading, assignId }
 
+  const [events, setEvents] = useState([])
+  const [eventsLoading, setEventsLoading] = useState(false)
+
+  const loadEvents = useCallback(async () => {
+    setEventsLoading(true)
+    try { const r = await api.get('/events'); setEvents(r.data) }
+    finally { setEventsLoading(false) }
+  }, [])
+
+  useEffect(() => { if (tab === 'history') loadEvents() }, [tab, loadEvents])
+
   const [search, setSearch] = useState('')
   const [newStation, setNewStation] = useState({ name: '', location: '' })
   const [stationError, setStationError] = useState('')
@@ -106,6 +117,7 @@ export default function SuperAdminDashboard() {
       <nav className={styles.tabs}>
         <button className={tab === 'stations' ? styles.active : ''} onClick={() => setTab('stations')}>תחנות ({stations.length})</button>
         <button className={tab === 'managers' ? styles.active : ''} onClick={() => setTab('managers')}>מנהלים ({managers.filter(m => m.role === 'manager').length})</button>
+        <button className={tab === 'history' ? styles.active : ''} onClick={() => setTab('history')}>היסטוריה</button>
       </nav>
 
       <main className={styles.content}>
@@ -213,6 +225,44 @@ export default function SuperAdminDashboard() {
             </table>
           </div>
         )}
+        {/* HISTORY */}
+        {tab === 'history' && (
+          <div className={styles.section}>
+            <div className={styles.toolbar}>
+              <h2 style={{margin:0}}>היסטוריית פעולות</h2>
+              <button onClick={loadEvents} style={{marginRight:'auto'}}>רענן</button>
+            </div>
+            {eventsLoading && <p className={styles.loading}>טוען...</p>}
+            {!eventsLoading && (
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>תאריך ושעה</th>
+                    <th>סוג</th>
+                    <th>משתמש</th>
+                    <th>תחנה</th>
+                    <th>דלת</th>
+                    <th>סטטוס</th>
+                    <th>סיבת כשל</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {events.map(e => (
+                    <tr key={e.id} style={{background: e.status === 'failed' ? '#fff5f5' : 'inherit'}}>
+                      <td style={{whiteSpace:'nowrap'}}>{new Date(e.createdAt).toLocaleString('he-IL')}</td>
+                      <td>{e.eventType === 'login' ? '🔑 כניסה' : '🚪 פתיחה'}</td>
+                      <td>{e.user?.name ?? e.attemptedName ?? '—'}</td>
+                      <td>{e.station?.name ?? '—'}</td>
+                      <td>{e.doorNumber ?? '—'}</td>
+                      <td>{e.status === 'success' ? '✅' : '❌'}</td>
+                      <td>{failureLabel(e.failureReason)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </main>
     </div>
   )
@@ -220,4 +270,8 @@ export default function SuperAdminDashboard() {
 
 function roleLabel(r) {
   return { super_admin: 'מנהל ראשי', manager: 'מנהל', worker: 'עובד' }[r] ?? r
+}
+
+function failureLabel(r) {
+  return { wrong_password: 'סיסמה שגויה', wrong_pin: 'PIN שגוי', no_permission: 'אין הרשאה', user_not_found: 'משתמש לא קיים' }[r] ?? ''
 }
