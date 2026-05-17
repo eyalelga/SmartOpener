@@ -227,39 +227,31 @@ export default function SuperAdminDashboard() {
         )}
         {/* HISTORY */}
         {tab === 'history' && (
-          <div className={styles.section}>
+          <div className={styles.section} style={{maxWidth:'100%'}}>
             <div className={styles.toolbar}>
               <h2 style={{margin:0}}>היסטוריית פעולות</h2>
-              <button onClick={loadEvents} style={{marginRight:'auto'}}>רענן</button>
+              <button onClick={loadEvents} className={styles.assignBtn} style={{marginRight:'auto'}}>רענן</button>
             </div>
             {eventsLoading && <p className={styles.loading}>טוען...</p>}
             {!eventsLoading && (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>תאריך ושעה</th>
-                    <th>סוג</th>
-                    <th>משתמש</th>
-                    <th>תחנה</th>
-                    <th>דלת</th>
-                    <th>סטטוס</th>
-                    <th>סיבת כשל</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {events.map(e => (
-                    <tr key={e.id} style={{background: e.status === 'failed' ? '#fff5f5' : 'inherit'}}>
-                      <td style={{whiteSpace:'nowrap'}}>{new Date(e.createdAt).toLocaleString('he-IL')}</td>
-                      <td>{e.eventType === 'login' ? '🔑 כניסה' : '🚪 פתיחה'}</td>
-                      <td>{e.user?.name ?? e.attemptedName ?? '—'}</td>
-                      <td>{e.station?.name ?? '—'}</td>
-                      <td>{e.doorNumber ?? '—'}</td>
-                      <td>{e.status === 'success' ? '✅' : '❌'}</td>
-                      <td>{failureLabel(e.failureReason)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className={styles.eventList}>
+                {events.length === 0 && <p className={styles.dim}>אין רשומות עדיין</p>}
+                {events.map(e => (
+                  <div key={e.id} className={`${styles.eventCard} ${e.status === 'failed' ? styles.eventFailed : styles.eventSuccess}`}>
+                    <div className={styles.eventHeader}>
+                      <span className={styles.eventType}>{e.eventType === 'login' ? '🔑 כניסה' : '🚪 פתיחת דלת'}</span>
+                      <span className={styles.eventStatus}>{e.status === 'success' ? '✅' : '❌'}</span>
+                      <span className={styles.eventTime}>{new Date(e.createdAt).toLocaleString('he-IL')}</span>
+                    </div>
+                    <div className={styles.eventBody}>
+                      <span><b>משתמש:</b> {e.user?.name ?? e.attemptedName ?? '—'}</span>
+                      {e.station && <span><b>תחנה:</b> {e.station.name}</span>}
+                      {e.doorNumber && <span><b>דלת:</b> {e.doorNumber}</span>}
+                      {e.failureReason && <span className={styles.eventReason}><b>סיבה:</b> {failureLabel(e.failureReason)}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}
