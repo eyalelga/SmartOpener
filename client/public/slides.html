@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta property="og:title" content="SmartOpener — מצגת">
+<meta property="og:description" content="מערכת ניהול פתיחת תאי הטענה חכמה">
+<title>SmartOpener — מצגת</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+
+#story {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #111;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* PROGRESS */
+#progress {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  gap: 3px;
+  padding: 10px 10px 0;
+  z-index: 10;
+}
+.bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: #fff;
+  width: 0%;
+  transition: width linear;
+}
+.bar-fill.done { width: 100%; transition: none; }
+
+/* TAP ZONES */
+#tap-left, #tap-right {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 40%;
+  z-index: 5;
+}
+#tap-left  { left: 0; }
+#tap-right { right: 0; }
+
+/* COUNTER */
+#counter {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  z-index: 10;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+}
+
+/* PAUSE INDICATOR */
+#pause-icon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 48px;
+  color: rgba(255,255,255,0.8);
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+</style>
+</head>
+<body>
+<div id="story">
+  <div id="progress"></div>
+  <div id="tap-left"></div>
+  <div id="tap-right"></div>
+  <div id="pause-icon">⏸</div>
+  <div id="counter">1 / 7</div>
+
+  <div class="slide active"><img src="/slides/s1.jpeg" alt="שקף 1"></div>
+  <div class="slide"><img src="/slides/s2.jpeg" alt="שקף 2"></div>
+  <div class="slide"><img src="/slides/s3.jpeg" alt="שקף 3"></div>
+  <div class="slide"><img src="/slides/s4.jpg"  alt="שקף 4"></div>
+  <div class="slide"><img src="/slides/s5.jpg"  alt="שקף 5"></div>
+  <div class="slide"><img src="/slides/s6.jpg"  alt="שקף 6"></div>
+  <div class="slide"><img src="/slides/s7.jpeg" alt="שקף 7"></div>
+</div>
+
+<script>
+const DURATION = 5000
+const slides = document.querySelectorAll('.slide')
+const progress = document.getElementById('progress')
+const counter = document.getElementById('counter')
+const pauseIcon = document.getElementById('pause-icon')
+const total = slides.length
+
+let current = 0
+let paused = false
+let timer = null
+let fillTimer = null
+let bars = []
+
+// Build progress bars
+slides.forEach((_, i) => {
+  const wrap = document.createElement('div')
+  wrap.className = 'bar-wrap'
+  const fill = document.createElement('div')
+  fill.className = 'bar-fill'
+  wrap.appendChild(fill)
+  progress.appendChild(wrap)
+  bars.push(fill)
+})
+
+function showSlide(idx) {
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx))
+  counter.textContent = `${idx + 1} / ${total}`
+
+  bars.forEach((b, i) => {
+    b.style.transition = 'none'
+    b.style.width = i < idx ? '100%' : '0%'
+    b.classList.remove('done')
+  })
+
+  clearTimeout(timer)
+  clearInterval(fillTimer)
+
+  if (!paused) startTimer()
+}
+
+function startTimer() {
+  const bar = bars[current]
+  bar.style.transition = `width ${DURATION}ms linear`
+  bar.style.width = '100%'
+
+  timer = setTimeout(() => {
+    bar.classList.add('done')
+    if (current < total - 1) {
+      current++
+      showSlide(current)
+    }
+  }, DURATION)
+}
+
+function pauseTimer() {
+  clearTimeout(timer)
+  clearInterval(fillTimer)
+  const bar = bars[current]
+  const computed = getComputedStyle(bar).width
+  const parentWidth = bar.parentElement.offsetWidth
+  const pct = (parseFloat(computed) / parentWidth) * 100
+  bar.style.transition = 'none'
+  bar.style.width = pct + '%'
+  paused = true
+  pauseIcon.style.opacity = '1'
+  setTimeout(() => { pauseIcon.style.opacity = '0' }, 600)
+}
+
+function resumeTimer() {
+  paused = false
+  const bar = bars[current]
+  const pct = parseFloat(bar.style.width) || 0
+  const remaining = DURATION * (1 - pct / 100)
+  bar.style.transition = `width ${remaining}ms linear`
+  bar.style.width = '100%'
+  timer = setTimeout(() => {
+    if (current < total - 1) { current++; showSlide(current) }
+  }, remaining)
+}
+
+// Tap left/right
+document.getElementById('tap-left').addEventListener('click', () => {
+  if (current > 0) { current--; showSlide(current) }
+})
+document.getElementById('tap-right').addEventListener('click', () => {
+  if (current < total - 1) { current++; showSlide(current) }
+  else showSlide(0) // loop
+})
+
+// Hold to pause
+let holdTimeout = null
+document.getElementById('story').addEventListener('pointerdown', () => {
+  holdTimeout = setTimeout(() => { pauseTimer() }, 150)
+})
+document.getElementById('story').addEventListener('pointerup', () => {
+  clearTimeout(holdTimeout)
+  if (paused) resumeTimer()
+})
+
+// Swipe
+let startX = 0
+document.getElementById('story').addEventListener('touchstart', e => { startX = e.touches[0].clientX }, { passive: true })
+document.getElementById('story').addEventListener('touchend', e => {
+  const diff = startX - e.changedTouches[0].clientX
+  if (Math.abs(diff) > 50) {
+    if (diff > 0 && current < total - 1) { current++; showSlide(current) }
+    if (diff < 0 && current > 0) { current--; showSlide(current) }
+  }
+}, { passive: true })
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' && current > 0) { current--; showSlide(current) }
+  if (e.key === 'ArrowLeft' && current < total - 1) { current++; showSlide(current) }
+  if (e.key === ' ') { paused ? resumeTimer() : pauseTimer() }
+})
+
+// Start
+showSlide(0)
+</script>
+</body>
+</html>
