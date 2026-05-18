@@ -6,13 +6,15 @@
 <meta property="og:title" content="SmartOpener — מצגת">
 <meta property="og:description" content="מערכת ניהול פתיחת תאי הטענה חכמה">
 <title>SmartOpener — מצגת</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
   width: 100%; height: 100%;
   background: #000;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Heebo', 'Segoe UI', Arial, sans-serif;
   overflow: hidden;
   touch-action: none;
   user-select: none;
@@ -47,7 +49,134 @@ html, body {
   display: block;
 }
 
-/* PROGRESS */
+/* ─── HTML SLIDES ─── */
+.html-slide {
+  background: #060b17;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 16px 52px;
+}
+
+.slide-header {
+  text-align: center;
+  margin-bottom: 14px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.slide-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.accent-red  { color: #ef5454; }
+
+.title-line {
+  width: 56px;
+  height: 3px;
+  background: #2dd4a2;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+/* Card containers */
+.cards-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Card */
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-height: 0;
+}
+
+.card-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2dd4a2;
+  color: #060b17;
+  font-size: 11px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.card-title {
+  color: #2dd4a2;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.25;
+  flex-shrink: 0;
+}
+
+.card-text {
+  color: rgba(255,255,255,0.72);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.card-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.card-bullets li {
+  color: rgba(255,255,255,0.78);
+  font-size: 11.5px;
+  line-height: 1.45;
+  display: flex;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.card-bullets li::before {
+  content: '✓';
+  color: #2dd4a2;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.card-bullets li.bold-item {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ─── PROGRESS ─── */
 #progress {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -118,12 +247,127 @@ html, body {
   <div id="pause-icon">⏸</div>
   <div id="counter">1 / 7</div>
 
+  <!-- שקף 1: כותרת — תמונה -->
   <div class="slide active"><img src="/slides/s1.jpeg" alt="שקף 1"></div>
-  <div class="slide"><img src="/slides/s2.jpeg" alt="שקף 2"></div>
+
+  <!-- שקף 2: הבעיה — 3 קוביות אחת מתחת לשנייה -->
+  <div class="slide html-slide">
+    <div class="slide-header">
+      <h2 class="slide-title">המצב הקיים: <span class="accent-red">פרצת אבטחה מובנית</span></h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="cards-col">
+      <div class="card">
+        <div class="card-icon">👁</div>
+        <div class="card-title">חוסר שקיפות</div>
+        <div class="card-text">מי פתח? מתי? איזה תא? היעדר תיעוד מוביל לאובדן ציוד ללא יכולת מעקב.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title">סיכון הרסני</div>
+        <div class="card-text">חשיפת הגדרות קריטיות של העמדה והטאבלט לעובדי שטח עלולה להוביל לנזק תוכנתי והשבתת אתר.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔓</div>
+        <div class="card-title">המפתח החשוף</div>
+        <div class="card-text">הגישה לדלתות מחייבת כניסה לתפריטי ניהול בטאבלט. העובד הופך ל"מנהל מערכת" בעל כורחו.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- שקף 3: SmartOpener Utility — תמונה -->
   <div class="slide"><img src="/slides/s3.jpeg" alt="שקף 3"></div>
-  <div class="slide"><img src="/slides/s4.jpg"  alt="שקף 4"></div>
-  <div class="slide"><img src="/slides/s5.jpg"  alt="שקף 5"></div>
-  <div class="slide"><img src="/slides/s6.jpg"  alt="שקף 6"></div>
+
+  <!-- שקף 4: זרימת עבודה — 3 קוביות אחת מתחת לשנייה -->
+  <div class="slide html-slide">
+    <div class="slide-header">
+      <h2 class="slide-title">זרימת עבודה חכמה</h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="cards-col">
+      <div class="card">
+        <div class="card-icon">👤</div>
+        <div class="card-title">הקמת עובד</div>
+        <div class="card-text">המנהל מקים עובד במערכת ומשייך לו עמדות רלוונטיות בלבד בשניות ספורות.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📲</div>
+        <div class="card-title">שיוך דיגיטלי</div>
+        <div class="card-text">המערכת יוצרת קוד QR ייחודי להעברת הגישה והיוזר לטלפון האישי של העובד.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">פתיחה מאובטחת</div>
+        <div class="card-text">העובד מקיש סיסמה בנייד האישי ובוחר את הדלת המבוקשת – ללא מגע בטאבלט.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- שקף 5: UX — 2 קוביות אחת מתחת לשנייה -->
+  <div class="slide html-slide">
+    <div class="slide-header">
+      <h2 class="slide-title">חוויית משתמש (UX) מתקדמת</h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="cards-col">
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">לעובד: פשטות ונוחות</div>
+        <ul class="card-bullets">
+          <li>ממשק פשוט ואינטואיטיבי המותאם לטלפון האישי.</li>
+          <li>אין צורך "להתעסק" עם הטאבלט של העמדה או להיכנס להגדרות.</li>
+          <li>פתיחה מבוקרת בשתי לחיצות — מהירות תפעולית מקסימלית.</li>
+          <li class="bold-item">ביטול הצורך בהרשאות אדמין בטאבלט – מעבר להרשאת פתיחה בלבד בנייד.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <div class="card-title">למנהל: שליטה מלאה</div>
+        <ul class="card-bullets">
+          <li>ניהול מצבת עובדים והרשאות ישירות מהסמארטפון.</li>
+          <li>יכולת ביטול גישה מיידית לכל עובד בכל זמן נתון.</li>
+          <li>חלוקת הרשאות חכמה לפי סניפים, אזורים או עמדות.</li>
+          <li>צפייה ביומן אירועים חי המאפשר מעקב אחר כל פתיחה.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- שקף 6: תוכנית יישום — 4 קוביות ברשת 2×2 -->
+  <div class="slide html-slide">
+    <div class="slide-header">
+      <h2 class="slide-title">תוכנית יישום פרקטית</h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-num">1</div>
+        <div class="card-icon">🔬</div>
+        <div class="card-title">פיילוט ראשוני</div>
+        <div class="card-text">בדיקת קישוריות ופתיחה בעמדה אחת נבחרת לווידוא יציבות.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">2</div>
+        <div class="card-icon">📊</div>
+        <div class="card-title">מערך דשבורדים</div>
+        <div class="card-text">הקמת ממשקי ניהול ואפליקציית עובד ייעודית.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">3</div>
+        <div class="card-icon">🔧</div>
+        <div class="card-title">חומרה ואינטגרציה</div>
+        <div class="card-text">התקנת בקרי SmartOpener וסנכרון מלא מול המערכות.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">4</div>
+        <div class="card-icon">🚀</div>
+        <div class="card-title">פריסה ארצית</div>
+        <div class="card-text">מעבר מלא לשיטה החדשה בכל סניפי מאיר יוטיליטיז.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- שקף 7: CTA — תמונה -->
   <div class="slide"><img src="/slides/s7.jpeg" alt="שקף 7"></div>
 </div>
 
@@ -138,10 +382,8 @@ const total = slides.length
 let current = 0
 let paused = false
 let timer = null
-let fillTimer = null
 let bars = []
 
-// Build progress bars
 slides.forEach((_, i) => {
   const wrap = document.createElement('div')
   wrap.className = 'bar-wrap'
@@ -163,8 +405,6 @@ function showSlide(idx) {
   })
 
   clearTimeout(timer)
-  clearInterval(fillTimer)
-
   if (!paused) startTimer()
 }
 
@@ -184,7 +424,6 @@ function startTimer() {
 
 function pauseTimer() {
   clearTimeout(timer)
-  clearInterval(fillTimer)
   const bar = bars[current]
   const computed = getComputedStyle(bar).width
   const parentWidth = bar.parentElement.offsetWidth
@@ -208,16 +447,14 @@ function resumeTimer() {
   }, remaining)
 }
 
-// Tap left/right
 document.getElementById('tap-left').addEventListener('click', () => {
   if (current > 0) { current--; showSlide(current) }
 })
 document.getElementById('tap-right').addEventListener('click', () => {
   if (current < total - 1) { current++; showSlide(current) }
-  else showSlide(0) // loop
+  else showSlide(0)
 })
 
-// Hold to pause
 let holdTimeout = null
 document.getElementById('story').addEventListener('pointerdown', () => {
   holdTimeout = setTimeout(() => { pauseTimer() }, 150)
@@ -227,7 +464,6 @@ document.getElementById('story').addEventListener('pointerup', () => {
   if (paused) resumeTimer()
 })
 
-// Swipe
 let startX = 0
 document.getElementById('story').addEventListener('touchstart', e => { startX = e.touches[0].clientX }, { passive: true })
 document.getElementById('story').addEventListener('touchend', e => {
@@ -238,14 +474,12 @@ document.getElementById('story').addEventListener('touchend', e => {
   }
 }, { passive: true })
 
-// Keyboard
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' && current > 0) { current--; showSlide(current) }
   if (e.key === 'ArrowLeft' && current < total - 1) { current++; showSlide(current) }
   if (e.key === ' ') { paused ? resumeTimer() : pauseTimer() }
 })
 
-// Start
 showSlide(0)
 </script>
 </body>
